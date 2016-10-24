@@ -43,12 +43,14 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 loadData(jTable1.getSelectedRow());
             }
         });
-        reset();
+        this.campoIDInterno.setEnabled(false);
+        resetViewer();
     }
 
     private void loadData(int rowIndex) {
-        DefaultTableModel model = (DefaultTableModel) this.jTable1.getModel();
-        Vector dataVector = model.getDataVector();
+        Vector dataVector = ((DefaultTableModel) this.jTable1.getModel()).getDataVector();
+        this.campoIDInterno.setText(((Vector) dataVector.elementAt(rowIndex)).elementAt(0).toString());
+        this.campoID.setText(((Vector) dataVector.elementAt(rowIndex)).elementAt(1).toString());
         this.campoNombreCasoUso.setText(((Vector) dataVector.elementAt(rowIndex)).elementAt(2).toString());
         this.campoCosteCasoUso.setText(((Vector) dataVector.elementAt(rowIndex)).elementAt(3).toString());
     }
@@ -104,6 +106,10 @@ public class PrincipalFrame extends javax.swing.JFrame {
         campoNombreCasoUso = new javax.swing.JTextField();
         etiquetaCosteCasoUso = new javax.swing.JLabel();
         campoCosteCasoUso = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        campoIDInterno = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
+        campoID = new javax.swing.JTextField();
         casoUsoAceptar = new javax.swing.JButton();
         deleteUseCaseButton = new javax.swing.JButton();
         editUseCaseButton = new javax.swing.JButton();
@@ -120,7 +126,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 733, Short.MAX_VALUE)
+            .addGap(0, 770, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,7 +139,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 733, Short.MAX_VALUE)
+            .addGap(0, 770, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -319,30 +325,56 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
         etiquetaCosteCasoUso.setText("Coste:");
 
+        jLabel11.setText("ID-Interno: ");
+
+        campoIDInterno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoIDInternoActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setText("ID:");
+
         javax.swing.GroupLayout detallesCasoUsoLayout = new javax.swing.GroupLayout(detallesCasoUso);
         detallesCasoUso.setLayout(detallesCasoUsoLayout);
         detallesCasoUsoLayout.setHorizontalGroup(
             detallesCasoUsoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(campoNombreCasoUso)
             .addGroup(detallesCasoUsoLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(detallesCasoUsoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(etiquetaNombreCasoUso)
-                    .addComponent(etiquetaCosteCasoUso))
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(campoCosteCasoUso)
+                    .addComponent(campoID, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(campoIDInterno, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(campoCosteCasoUso, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(campoNombreCasoUso, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(detallesCasoUsoLayout.createSequentialGroup()
+                        .addGroup(detallesCasoUsoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(etiquetaNombreCasoUso)
+                            .addComponent(etiquetaCosteCasoUso))
+                        .addGap(0, 138, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         detallesCasoUsoLayout.setVerticalGroup(
             detallesCasoUsoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(detallesCasoUsoLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, detallesCasoUsoLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(campoIDInterno, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(campoID, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(etiquetaNombreCasoUso)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(campoNombreCasoUso, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(etiquetaCosteCasoUso)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(campoCosteCasoUso, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         casoUsoAceptar.setText("Aceptar");
@@ -375,29 +407,31 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 .addComponent(listaCasosUso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(detallesCasoUso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                                .addGap(0, 51, Short.MAX_VALUE)
-                                .addComponent(casoUsoAceptar)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(casoUsoCancelar)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(casoUsoAceptar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(casoUsoCancelar)
                         .addGap(29, 29, 29))
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(addUseCaseButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(deleteUseCaseButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(editUseCaseButton)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(addUseCaseButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(deleteUseCaseButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(editUseCaseButton))
+                            .addComponent(detallesCasoUso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(21, Short.MAX_VALUE))))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(listaCasosUso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(listaCasosUso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel6Layout.createSequentialGroup()
@@ -409,13 +443,12 @@ public class PrincipalFrame extends javax.swing.JFrame {
                                 .addGap(28, 28, 28)
                                 .addComponent(editUseCaseButton)))
                         .addGap(26, 26, 26)
-                        .addComponent(detallesCasoUso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(detallesCasoUso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(casoUsoCancelar)
                             .addComponent(casoUsoAceptar))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGap(21, 21, 21))))
         );
 
         jTabbedPane2.addTab("Casos de uso", jPanel6);
@@ -539,6 +572,11 @@ public class PrincipalFrame extends javax.swing.JFrame {
         this.casoUsoCancelar.setEnabled(false);
         this.campoCosteCasoUso.setEnabled(false);
         this.campoNombreCasoUso.setEnabled(false);
+        this.campoID.setEnabled(false);
+        this.campoCosteCasoUso.setText("");
+        this.campoNombreCasoUso.setText("");
+        this.campoID.setText("");
+        this.campoIDInterno.setText("");
     }
 
     private void disableOptions() {
@@ -552,11 +590,12 @@ public class PrincipalFrame extends javax.swing.JFrame {
         this.casoUsoCancelar.setEnabled(true);
         this.campoCosteCasoUso.setEnabled(true);
         this.campoNombreCasoUso.setEnabled(true);
+        this.campoID.setEnabled(true);
     }
 
     private void casoUsoCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_casoUsoCancelarActionPerformed
         this.currentAction = "";
-        reset();
+        resetViewer();
     }//GEN-LAST:event_casoUsoCancelarActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -568,7 +607,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
     private void casoUsoAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_casoUsoAceptarActionPerformed
         this.actionsMap.get(this.currentAction).execute();
         this.currentAction = "";
-        reset();
+        resetViewer();
     }//GEN-LAST:event_casoUsoAceptarActionPerformed
 
     private void deleteUseCaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteUseCaseButtonActionPerformed
@@ -581,10 +620,12 @@ public class PrincipalFrame extends javax.swing.JFrame {
         this.prepareButtons();
     }//GEN-LAST:event_editUseCaseButtonActionPerformed
 
-    private void reset() {
+    private void campoIDInternoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoIDInternoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_campoIDInternoActionPerformed
+
+    private void resetViewer() {
         loadTable();
-        this.campoCosteCasoUso.setText("");
-        this.campoNombreCasoUso.setText("");
         this.enableOptions();
         this.disableActions();
     }
@@ -628,6 +669,8 @@ public class PrincipalFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addUseCaseButton;
     private javax.swing.JTextField campoCosteCasoUso;
+    private javax.swing.JTextField campoID;
+    private javax.swing.JTextField campoIDInterno;
     private javax.swing.JTextField campoNombreCasoUso;
     private javax.swing.JButton casoUsoAceptar;
     private javax.swing.JButton casoUsoCancelar;
@@ -639,6 +682,8 @@ public class PrincipalFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -673,7 +718,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 String useCaseId = "CU00000" + useCaseIdA;
                 String useCaseName = campoNombreCasoUso.getText();
                 int cost = Integer.parseInt(campoCosteCasoUso.getText());
-                controller.create(new UseCase(useCaseIdA, useCaseName, useCaseName, cost));
+                controller.create(new UseCase(useCaseIdA, useCaseId, useCaseName, cost));
             }
         });
         this.actionsMap.put("DELETE", new Action() {
@@ -682,18 +727,21 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 try {
                     controller.destroy(1);
                 } catch (NonexistentEntityException ex) {
-                    System.exit(1);
+                    System.exit(0);
                 }
             }
         });
         this.actionsMap.put("EDIT", new Action() {
             @Override
             public void execute() {
-                UseCase useCase = new UseCase();
+                Integer useCaseIdA = new Integer(campoIDInterno.getText());
+                String useCaseId = campoID.getText();
+                String useCaseName = campoNombreCasoUso.getText();
+                int cost = Integer.parseInt(campoCosteCasoUso.getText());
                 try {
-                    controller.edit(useCase);
+                    controller.edit(new UseCase(useCaseIdA, useCaseId, useCaseName, cost));
                 } catch (Exception ex) {
-                    System.exit(1);
+                    System.exit(0);
                 }
             }
         });
