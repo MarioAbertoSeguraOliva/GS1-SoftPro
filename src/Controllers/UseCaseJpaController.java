@@ -22,11 +22,11 @@ import javax.persistence.criteria.Root;
  * @author juancarlos
  */
 public class UseCaseJpaController implements Serializable {
+    private EntityManagerFactory emf = null;
 
     public UseCaseJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();

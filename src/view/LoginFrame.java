@@ -102,14 +102,14 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void iniciarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iniciarSesionActionPerformed
         // TODO add your handling code here:
-        if(!(userField.getText().equals("admin") && jPasswordField1.getText().equals("admin"))){
+        /*if(!(userField.getText().equals("admin") && jPasswordField1.getText().equals("admin"))){
             jLabel3.setVisible(true);
-        }else{
+        }else{*/
             this.dispose();
             PrincipalFrame principalFrame = new PrincipalFrame();
             principalFrame.setLocationRelativeTo(null);
             principalFrame.setVisible(true);
-        }
+       // }
     }//GEN-LAST:event_iniciarSesionActionPerformed
 
     /**

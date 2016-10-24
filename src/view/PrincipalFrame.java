@@ -1,25 +1,70 @@
 package view;
 
+import Controllers.UseCaseJpaController;
+import Controllers.exceptions.NonexistentEntityException;
+import Entities.UseCase;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Sas
  */
 public class PrincipalFrame extends javax.swing.JFrame {
 
+    private HashMap<String, Action> actionsMap;
+    private String currentAction;
+    private final UseCaseJpaController controller;
+
     /**
      * Creates new form principalFrame
      */
     public PrincipalFrame() {
         initComponents();
-        
-        
-        resetButtons();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("PruebaSoftProPU");
+        this.controller = new UseCaseJpaController(emf);
+        createActionMap();
+        this.jTable1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                loadData(jTable1.getSelectedRow());
+            }
+        });
+        reset();
+    }
+
+    private void loadData(int rowIndex) {
+        DefaultTableModel model = (DefaultTableModel) this.jTable1.getModel();
+        Vector dataVector = model.getDataVector();
+        this.campoNombreCasoUso.setText(((Vector) dataVector.elementAt(rowIndex)).elementAt(2).toString());
+        this.campoCosteCasoUso.setText(((Vector) dataVector.elementAt(rowIndex)).elementAt(3).toString());
+    }
+
+    private void loadTable() {
+        List<UseCase> useCaseList = controller.findUseCaseEntities();
+        DefaultTableModel model = (DefaultTableModel) this.jTable1.getModel();
+        model.setRowCount(0);
+        Object row[] = new Object[4];
+        for (UseCase useCase : useCaseList) {
+            row[0] = useCase.getUcIdA();
+            row[1] = useCase.getUcId();
+            row[2] = useCase.getUcName();
+            row[3] = useCase.getCost();
+            model.addRow(row);
+        }
     }
 
     /**
@@ -49,8 +94,8 @@ public class PrincipalFrame extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        cancelarCasoUso = new javax.swing.JButton();
-        botonNuevoCasoUso = new javax.swing.JButton();
+        casoUsoCancelar = new javax.swing.JButton();
+        addUseCaseButton = new javax.swing.JButton();
         listaCasosUso = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -59,7 +104,9 @@ public class PrincipalFrame extends javax.swing.JFrame {
         campoNombreCasoUso = new javax.swing.JTextField();
         etiquetaCosteCasoUso = new javax.swing.JLabel();
         campoCosteCasoUso = new javax.swing.JTextField();
-        aceptarCasoUso = new javax.swing.JButton();
+        casoUsoAceptar = new javax.swing.JButton();
+        deleteUseCaseButton = new javax.swing.JButton();
+        editUseCaseButton = new javax.swing.JButton();
         jPanel10 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -203,17 +250,17 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("Historias de usuario", jPanel5);
 
-        cancelarCasoUso.setText("Cancelar");
-        cancelarCasoUso.addActionListener(new java.awt.event.ActionListener() {
+        casoUsoCancelar.setText("Cancelar");
+        casoUsoCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelarCasoUsoActionPerformed(evt);
+                casoUsoCancelarActionPerformed(evt);
             }
         });
 
-        botonNuevoCasoUso.setText("Nuevo caso...");
-        botonNuevoCasoUso.addActionListener(new java.awt.event.ActionListener() {
+        addUseCaseButton.setText("Añadir caso...");
+        addUseCaseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonNuevoCasoUsoActionPerformed(evt);
+                addUseCaseButtonActionPerformed(evt);
             }
         });
 
@@ -221,19 +268,36 @@ public class PrincipalFrame extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID-Interno", "ID", "Nombre", "Coste"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(15);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setPreferredWidth(15);
             jTable1.getColumnModel().getColumn(2).setResizable(false);
             jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(10);
         }
 
         javax.swing.GroupLayout listaCasosUsoLayout = new javax.swing.GroupLayout(listaCasosUso);
@@ -249,7 +313,7 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        detallesCasoUso.setBorder(javax.swing.BorderFactory.createTitledBorder("Detalles de Caso de Uso"));
+        detallesCasoUso.setBorder(javax.swing.BorderFactory.createTitledBorder("Detalles del Caso de Uso"));
 
         etiquetaNombreCasoUso.setText("Nombre:");
 
@@ -281,7 +345,26 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
-        aceptarCasoUso.setText("Aceptar");
+        casoUsoAceptar.setText("Aceptar");
+        casoUsoAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                casoUsoAceptarActionPerformed(evt);
+            }
+        });
+
+        deleteUseCaseButton.setText("Eliminar caso...");
+        deleteUseCaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteUseCaseButtonActionPerformed(evt);
+            }
+        });
+
+        editUseCaseButton.setText("Editar caso...");
+        editUseCaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editUseCaseButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -293,15 +376,21 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(botonNuevoCasoUso)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(detallesCasoUso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(aceptarCasoUso)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(detallesCasoUso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                                .addGap(0, 51, Short.MAX_VALUE)
+                                .addComponent(casoUsoAceptar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(casoUsoCancelar)))
+                        .addGap(29, 29, 29))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(addUseCaseButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(deleteUseCaseButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cancelarCasoUso)))
-                .addGap(29, 29, 29))
+                        .addComponent(editUseCaseButton)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -310,14 +399,21 @@ public class PrincipalFrame extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(listaCasosUso, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(botonNuevoCasoUso)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addComponent(addUseCaseButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(deleteUseCaseButton))
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(editUseCaseButton)))
+                        .addGap(26, 26, 26)
                         .addComponent(detallesCasoUso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cancelarCasoUso)
-                            .addComponent(aceptarCasoUso))
+                            .addComponent(casoUsoCancelar)
+                            .addComponent(casoUsoAceptar))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -420,15 +516,48 @@ public class PrincipalFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void botonNuevoCasoUsoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonNuevoCasoUsoActionPerformed
-        this.aceptarCasoUso.setEnabled(true);
-        this.cancelarCasoUso.setEnabled(true);
-        this.botonNuevoCasoUso.setEnabled(false);
-    }//GEN-LAST:event_botonNuevoCasoUsoActionPerformed
+    private void addUseCaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addUseCaseButtonActionPerformed
+        this.currentAction = "ADD";
+        this.campoNombreCasoUso.setText("");
+        this.campoCosteCasoUso.setText("");
+        this.prepareButtons();
+    }//GEN-LAST:event_addUseCaseButtonActionPerformed
 
-    private void cancelarCasoUsoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarCasoUsoActionPerformed
-        resetButtons();
-    }//GEN-LAST:event_cancelarCasoUsoActionPerformed
+    private void prepareButtons() {
+        this.disableOptions();
+        this.enableActions();
+    }
+
+    private void enableOptions() {
+        this.addUseCaseButton.setEnabled(true);
+        this.deleteUseCaseButton.setEnabled(true);
+        this.editUseCaseButton.setEnabled(true);
+    }
+
+    private void disableActions() {
+        this.casoUsoAceptar.setEnabled(false);
+        this.casoUsoCancelar.setEnabled(false);
+        this.campoCosteCasoUso.setEnabled(false);
+        this.campoNombreCasoUso.setEnabled(false);
+    }
+
+    private void disableOptions() {
+        this.addUseCaseButton.setEnabled(false);
+        this.deleteUseCaseButton.setEnabled(false);
+        this.editUseCaseButton.setEnabled(false);
+    }
+
+    private void enableActions() {
+        this.casoUsoAceptar.setEnabled(true);
+        this.casoUsoCancelar.setEnabled(true);
+        this.campoCosteCasoUso.setEnabled(true);
+        this.campoNombreCasoUso.setEnabled(true);
+    }
+
+    private void casoUsoCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_casoUsoCancelarActionPerformed
+        this.currentAction = "";
+        reset();
+    }//GEN-LAST:event_casoUsoCancelarActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.dispose();
@@ -436,11 +565,30 @@ public class PrincipalFrame extends javax.swing.JFrame {
         loginFrame.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void resetButtons(){
-        this.botonNuevoCasoUso.setEnabled(true);
-        this.aceptarCasoUso.setEnabled(false);
-        this.cancelarCasoUso.setEnabled(false);
+    private void casoUsoAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_casoUsoAceptarActionPerformed
+        this.actionsMap.get(this.currentAction).execute();
+        this.currentAction = "";
+        reset();
+    }//GEN-LAST:event_casoUsoAceptarActionPerformed
+
+    private void deleteUseCaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteUseCaseButtonActionPerformed
+        this.currentAction = "DELETE";
+        this.prepareButtons();
+    }//GEN-LAST:event_deleteUseCaseButtonActionPerformed
+
+    private void editUseCaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editUseCaseButtonActionPerformed
+        this.currentAction = "EDIT";
+        this.prepareButtons();
+    }//GEN-LAST:event_editUseCaseButtonActionPerformed
+
+    private void reset() {
+        loadTable();
+        this.campoCosteCasoUso.setText("");
+        this.campoNombreCasoUso.setText("");
+        this.enableOptions();
+        this.disableActions();
     }
+
     /**
      * @param args the command line arguments
      */
@@ -478,12 +626,14 @@ public class PrincipalFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton aceptarCasoUso;
-    private javax.swing.JButton botonNuevoCasoUso;
+    private javax.swing.JButton addUseCaseButton;
     private javax.swing.JTextField campoCosteCasoUso;
     private javax.swing.JTextField campoNombreCasoUso;
-    private javax.swing.JButton cancelarCasoUso;
+    private javax.swing.JButton casoUsoAceptar;
+    private javax.swing.JButton casoUsoCancelar;
+    private javax.swing.JButton deleteUseCaseButton;
     private javax.swing.JPanel detallesCasoUso;
+    private javax.swing.JButton editUseCaseButton;
     private javax.swing.JLabel etiquetaCosteCasoUso;
     private javax.swing.JLabel etiquetaNombreCasoUso;
     private javax.swing.JButton jButton1;
@@ -513,4 +663,40 @@ public class PrincipalFrame extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JPanel listaCasosUso;
     // End of variables declaration//GEN-END:variables
+
+    private void createActionMap() {
+        this.actionsMap = new HashMap<>();
+        this.actionsMap.put("ADD", new Action() {
+            @Override
+            public void execute() {
+                Integer useCaseIdA = controller.getUseCaseCount() + 1;
+                String useCaseId = "CU00000" + useCaseIdA;
+                String useCaseName = campoNombreCasoUso.getText();
+                int cost = Integer.parseInt(campoCosteCasoUso.getText());
+                controller.create(new UseCase(useCaseIdA, useCaseName, useCaseName, cost));
+            }
+        });
+        this.actionsMap.put("DELETE", new Action() {
+            @Override
+            public void execute() {
+                try {
+                    controller.destroy(1);
+                } catch (NonexistentEntityException ex) {
+                    System.exit(1);
+                }
+            }
+        });
+        this.actionsMap.put("EDIT", new Action() {
+            @Override
+            public void execute() {
+                UseCase useCase = new UseCase();
+                try {
+                    controller.edit(useCase);
+                } catch (Exception ex) {
+                    System.exit(1);
+                }
+            }
+        });
+    }
+
 }
